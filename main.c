@@ -16,15 +16,13 @@ main()
 
     // init timer
     // prescale timer to 1/8th (1<<CS01) or 1/1st (1<<CS00) the clock rate
-    TCCR0B |= (1<<CS02); // 1/256
+    TCCR0B = (1<<CS02); // 1/256
     // enable timer overflow interrupt
-    TIMSK0 |= (1<<TOIE0);
+//    TIMSK0 = (1<<TOIE0);
 
 	// init pc0 interrupt
-	// Failing edge on INT0 generates an interrupt request.
-	MCUCR |= (1 << ISC01) | (0 << ISC00);
 	// External Interrupt Request 0 Enable
-	GIMSK |= (1 << PCIE);
+	GIMSK = (1 << PCIE);
 	// Set pin mask
 	PCMSK = PWR_MASK;
 
@@ -47,7 +45,7 @@ main()
 // Timer interrupt
 ISR(TIM0_OVF_vect)
 {
-	pulseCounter = 0;
+//	pulseCounter = 0;
 //	PORTB = 0;
 }
 
@@ -55,11 +53,18 @@ ISR(TIM0_OVF_vect)
 // Power change interrupt
 ISR(PCINT0_vect)
 {
+	if (PINB & (1 << PB0)) {
+		return;
+	}
 	uint8_t timer = TCNT0;
 	TCNT0 = 0;
-	if (timer >= 10 && timer <= 12)
+	if (timer >= 16 && timer <= 21)
 	{
 		pulseCounter++;
 //		PORTB = PIN_OUT;
+	}
+	else
+	{
+		pulseCounter = 0;
 	}
 }
