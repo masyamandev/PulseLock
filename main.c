@@ -1,10 +1,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-// for 1.2MHz
+// for 9.6MHz
 
-#define PIN_OUT (1 << PB1)
-#define PWR_MASK (1 << PCINT0) // Power interrupt (Same as previous line)
+#define PIN_OUT (1 << PB0)
+#define PIN_IN (1 << PB1)
+#define PWR_MASK (1 << PCINT1) // Power interrupt (Same as previous line)
 
 volatile uint8_t pulseCounter;
 
@@ -53,7 +54,7 @@ ISR(TIM0_OVF_vect)
 // Power change interrupt
 ISR(PCINT0_vect)
 {
-	if (PINB & (1 << PB0)) {
+	if (PINB & PIN_IN) {
 		return;
 	}
 	uint8_t timer = TCNT0;
